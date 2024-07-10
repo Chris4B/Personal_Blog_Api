@@ -20,7 +20,7 @@
 /node_modules
 
 # Ignore assets
-/assets
+# /assets
 
 # Ignore the Symfony binary folder
 /.symfony/cache
