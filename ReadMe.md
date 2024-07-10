@@ -13,7 +13,7 @@ Ceci est une API RESTful qui alimente une plateforme de blog personnel. L'API pe
 
 Voici un diagramme du modèle de données de l'API de blogging personnel :
 
-![Diagramme du Modèle de Données](assets/images/Modèle_physique.png)
+![Diagramme du Modèle de Données](assets/images/Modèle.png)
 
 ## Installation
 
