@@ -52,7 +52,7 @@ Voici un diagramme du modèle de données de l'API de blogging personnel :
    - Création, lecture, mise à jour et suppression des catégories.
 
 5. **Sécurité et Authentification**
-   - Utilisation de JWT (JSON Web Tokens) pour sécuriser les endpoints.
+   - Mise en place de l'authentification pour sécuriser les endpoints.
    - Gestion des rôles et des permissions des utilisateurs.
 
 6. **Recherche et Filtrage**
@@ -61,7 +61,7 @@ Voici un diagramme du modèle de données de l'API de blogging personnel :
 
 7. **Documentation de l'API**
    - Génération de documentation de l'API avec swagger
-   
+
 ## Installation
 
 ### Prérequis
