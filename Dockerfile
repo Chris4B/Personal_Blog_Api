@@ -1,31 +1,37 @@
-# Utiliser l'image officelle de Php avec FPM
-
+# Use the official PHP image with FPM
 FROM php:8.2-fpm
 
-# Installer les dépendances nécessaires 
+# Add a non-root user for Composer operations
+RUN useradd -m composeruser
 
+# Install additional packages
 RUN apt-get update && apt-get install -y \
     git \
-    unizp \
+    unzip \
     libpq-dev \
     libonig-dev \
-    && docker-php-ext-install pdo pdo_pgsql
+    && docker-php-ext-install pdo pdo_pgsql \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Installer composer 
-COPY --from=composer:lastest /usr/bin/composer /usr/bin/composer
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copier le code source de l'application 
-COPY .  /var/www/html
-
-# Définir le répertoire de travail
+# Set the working directory
 WORKDIR /var/www/html
 
-#Installer les dépendances
+# Copy application source code into the container
+COPY --chown=composeruser:composeruser . /var/www/html
+
+# Switch to the non-root user
+USER composeruser
+
+# Install application dependencies via Composer
 RUN composer install
 
-#donner les permissions nécessaires
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/var
+# Switch back to the root user
+USER root
 
-# Exposer le port 9000 pour PHP-FPM
+# Expose port 9000 for PHP-FPM
 EXPOSE 9000
+
