@@ -1,0 +1,84 @@
+# Specify the version of the docker-compose file format
+version: '3.8' 
+
+# Define the services
+services: 
+
+  # PHP service
+  php: 
+    # Use the Dockerfile in the current directory to build the image
+    build: . 
+
+    # Name of the container
+    container_name: blog_api_php 
+
+    # Mount the application directory into the container
+    volumes: 
+      - .:/var/www/html
+
+    # Set the application environment to development
+    environment: 
+      - APP_ENV=dev
+      - DATABASE_URL=postgresql://root:root@db:5432/blog_api_db?serverVersion=16&charset=utf8
+
+    # Ensure the db service is started before PHP
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # Adminer service
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  # Nginx service
+  nginx: 
+    # Use the official Nginx image
+    image: nginx:latest 
+
+    # Name of the container
+    container_name: blog_api_nginx
+
+    # Map port 80 of the container to port 8000 on the host 
+    ports: 
+      - "8000:80"
+    
+    # Mount the application directory and Nginx configuration file into the container
+    volumes: 
+      - .:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/snippets/fastcgi-php.conf:/etc/nginx/snippets/fastcgi-php.conf
+
+    # Ensure the PHP and db services are started before Nginx
+    depends_on: 
+      php:
+        condition: service_started
+      database:
+        condition: service_healthy
+
+
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-blog_api_db}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-blog_api_db}", "-U", "${POSTGRES_USER:-root}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+volumes:
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###

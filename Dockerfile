@@ -20,6 +20,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set the working directory
 WORKDIR /var/www/html
 
+# Install Symfony CLI
+RUN curl -sS https://get.symfony.com/cli/installer | bash
+RUN mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+
 # Copy application source code into the container
 COPY --chown=composeruser:composeruser . /var/www/html
 
@@ -27,7 +31,7 @@ COPY --chown=composeruser:composeruser . /var/www/html
 USER composeruser
 
 # Install application dependencies via Composer
-RUN composer install
+RUN composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest --optimize-autoloader
 
 # Switch back to the root user
 USER root
