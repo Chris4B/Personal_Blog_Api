@@ -1,10 +1,12 @@
-# Use the official PHP image with FPM
-FROM php:8.2-fpm
+ARG PHP_VERSION=8.2
+ARG NGINX_VERSION="latest"
 
-# Add a non-root user for Composer operations
-RUN useradd -m composeruser
+FROM php:${PHP_VERSION}-fpm as app_php
 
-# Install additional packages
+# Ajouter un utilisateur non-root pour les opérations Composer
+RUN adduser --disabled-password --gecos '' composeruser
+
+# Installer les packages supplémentaires
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -14,28 +16,40 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install Composer
+# Installer Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Set the working directory
+# Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Install Symfony CLI
+# Installer Symfony CLI
 RUN curl -sS https://get.symfony.com/cli/installer | bash
 RUN mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
-# Copy application source code into the container
+# Copier le code source de l'application dans le conteneur
 COPY --chown=composeruser:composeruser . /var/www/html
 
-# Switch to the non-root user
+# Basculer vers l'utilisateur non-root
 USER composeruser
 
-# Install application dependencies via Composer
+# Installer les dépendances de l'application via Composer
 RUN composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest --optimize-autoloader
 
-# Switch back to the root user
+# Revenir à l'utilisateur root
 USER root
 
-# Expose port 9000 for PHP-FPM
+# Exposer le port 9000 pour PHP-FPM
 EXPOSE 9000
 
+# Démarrer PHP-FPM
+CMD ["php-fpm"]
+
+
+# Nginx stage
+FROM nginx:${NGINX_VERSION} as nginx_app
+
+# Copier la configuration Nginx
+COPY docker/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+
+# Définir le répertoire de travail
+WORKDIR /app/public
