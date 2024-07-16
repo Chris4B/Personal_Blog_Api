@@ -24,6 +24,13 @@ class Comment
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updated_at = null;
 
+    #[ORM\ManyToOne(inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Post $posts = null;
+
+    #[ORM\ManyToOne(inversedBy: 'comments')]
+    private ?User $userid = null;
+
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
@@ -73,6 +80,30 @@ class Comment
     public function setUpdatedAt(?\DateTimeInterface $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getPosts(): ?Post
+    {
+        return $this->posts;
+    }
+
+    public function setPosts(?Post $posts): static
+    {
+        $this->posts = $posts;
+
+        return $this;
+    }
+
+    public function getUserid(): ?User
+    {
+        return $this->userid;
+    }
+
+    public function setUserid(?User $userid): static
+    {
+        $this->userid = $userid;
 
         return $this;
     }
