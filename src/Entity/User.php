@@ -46,15 +46,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeInterface $updated_at = null;
 
     /**
-     * @var Collection<int, post>
+     * @var Collection<int, Post>
      */
-    #[ORM\OneToMany(targetEntity: post::class, mappedBy: 'userid')]
+    #[ORM\OneToMany(targetEntity: post::class, mappedBy: 'userid', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $posts;
 
     /**
-     * @var Collection<int, comment>
+     * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: comment::class, mappedBy: 'userid')]
+    #[ORM\OneToMany(targetEntity: comment::class, mappedBy: 'userid', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $comments;
 
     public function __construct()

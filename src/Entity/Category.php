@@ -17,7 +17,7 @@ class Category
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -33,6 +33,7 @@ class Category
      * @var Collection<int, Post>
      */
     #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'categories')]
+    // #[ORM\JoinTable(name:'category_post')]
     private Collection $posts;
 
     public function __construct()

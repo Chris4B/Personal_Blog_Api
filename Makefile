@@ -47,3 +47,19 @@ db-migrate-diff:
 # Supprimer la base de données
 db-drop:
 	docker-compose exec php php bin/console doctrine:database:drop --force
+
+#exécuter composer install
+composer-install:
+	docker-compose exec php composer install 
+
+# créer les fixtures
+fixtures-create:
+	docker-compose exec php php bin/console make:fixtures
+
+# load fixtures
+fixtures-load:
+	docker-compose exec php php bin/console doctrine:fixtures:load
+
+# Make entity
+entity:
+	docker-compose exec php php bin/console make:entity

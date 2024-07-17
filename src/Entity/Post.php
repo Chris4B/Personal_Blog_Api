@@ -27,7 +27,7 @@ class Post
     private ?\DateTimeInterface $updated_at = null;
 
     /**
-     * @var Collection<int, category>
+     * @var Collection<int, Category>
      */
     #[ORM\ManyToMany(targetEntity: category::class, inversedBy: 'posts')]
     private Collection $categories;
@@ -35,11 +35,15 @@ class Post
     /**
      * @var Collection<int, comment>
      */
-    #[ORM\OneToMany(targetEntity: comment::class, mappedBy: 'posts')]
+    #[ORM\OneToMany(targetEntity: comment::class, mappedBy: 'posts', orphanRemoval: true)]
     private Collection $comments;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
+
     private ?User $userid = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $content = null;
 
     public function __construct()
     {
@@ -162,6 +166,18 @@ class Post
     public function setUserid(?User $userid): static
     {
         $this->userid = $userid;
+
+        return $this;
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(string $content): static
+    {
+        $this->content = $content;
 
         return $this;
     }
