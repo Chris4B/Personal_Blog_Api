@@ -32,4 +32,18 @@ class PostController extends AbstractController
 
         return new JsonResponse(null, Response::HTTP_NOT_FOUND, [], true);
     }
+
+    #[Route('api/posts/{id}/comments', name:'get_all_comment_by_post', methods: ['GET'])]
+    public function getAllCommentsByPost(Post $post, SerializerInterface $serializer): JsonResponse
+    {
+        if(!$post){
+            return new JsonResponse(['error' => "Post not found"], Response::HTTP_NOT_FOUND, [], true);
+        }
+
+        $comments = $post->getComments();
+
+        $jsoncomments = $serializer->serialize($comments,"json", ['groups' => 'comment:read']);
+
+        return new JsonResponse($jsoncomments, Response::HTTP_OK, [], true);
+    }
 }
