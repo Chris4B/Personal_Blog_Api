@@ -20,7 +20,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read', 'user:write','post:read'])]
+    #[Groups(['user:read', 'user:write', 'post:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -31,7 +31,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    #[Groups(['user:read', 'user:write'])]
+    // #[Groups(['user:read', 'user:write'])]
     private array $roles = [];
 
     /**
@@ -55,15 +55,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Post>
      */
-    #[ORM\OneToMany(targetEntity: post::class, mappedBy: 'userid', cascade: ['persist', 'remove'], orphanRemoval: true)]
-   
+    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'userid', cascade: ['persist', 'remove'], orphanRemoval: true)]
+
     private Collection $posts;
 
     /**
      * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: comment::class, mappedBy: 'userid', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'userid', cascade: ['persist', 'remove'], orphanRemoval: true)]
+
     private Collection $comments;
 
     public function __construct()
