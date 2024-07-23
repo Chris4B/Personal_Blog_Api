@@ -56,7 +56,7 @@ final class CategoryFactory extends PersistentProxyObjectFactory{
             'name' => self::faker()->word(),
             'description' => self::faker()->sentence(),
             'updated_at' => null ,
-            // 'post' => PostFactory::randomRange(2,4),
+            
         ];
     }
 

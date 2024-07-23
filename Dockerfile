@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install -y \
 # Installer Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Copier le fichier php.ini
+COPY php.ini /usr/local/etc/php/
+
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 

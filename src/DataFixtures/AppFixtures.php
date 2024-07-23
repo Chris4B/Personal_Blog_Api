@@ -18,12 +18,13 @@ class AppFixtures extends Fixture
 
         UserFactory::createMany(20);
 
+        //create comments
+        CommentFactory::createMany(20);
         
         //create a categroy
         CategoryFactory::createMany(5);
 
-        //create comments
-        CommentFactory::createMany(20);
+        
 
         //create post
         PostFactory::createMany(20);

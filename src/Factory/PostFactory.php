@@ -54,8 +54,8 @@ final class PostFactory extends PersistentProxyObjectFactory{
             "content" => self::faker()->paragraph(),
             'updated_at' => null,
             "userid" => UserFactory::random(),
-            "categories" => CategoryFactory::randomSet(2),
-            // "comment" => CommentFactory::randomSet(3),
+            "categories" => CategoryFactory::new(),
+            "comments" => CommentFactory::new(),
         ];
     }
 

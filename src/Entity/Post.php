@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -15,34 +16,41 @@ class Post
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["post:read", "post:write"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["post:read", "post:write"])]
     private ?string $title = null;
 
     #[ORM\Column]
+    #[Groups(["post:read", "post:write"])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(["post:read", "post:write"])]
     private ?\DateTimeInterface $updated_at = null;
 
     /**
      * @var Collection<int, Category>
      */
-    #[ORM\ManyToMany(targetEntity: category::class, inversedBy: 'posts')]
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'posts')]
+    #[Groups(["post:read"])]
     private Collection $categories;
 
     /**
-     * @var Collection<int, comment>
+     * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: comment::class, mappedBy: 'posts', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'posts', orphanRemoval: true)]
+    #[Groups(["post:read"])]
     private Collection $comments;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
-
+    #[Groups(["post:read"])]
     private ?User $userid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["post:read", "post:write"])]
     private ?string $content = null;
 
     public function __construct()
