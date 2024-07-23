@@ -46,4 +46,19 @@ class PostController extends AbstractController
 
         return new JsonResponse($jsoncomments, Response::HTTP_OK, [], true);
     }
+
+    #[Route('api/posts/{id}/categories', name:'', methods: ['GET'])]
+    public function getCategoryByPost(Post $post, SerializerInterface $serializer): JsonResponse
+    {
+        if(!$post){
+            return new JsonResponse(['error'=> 'Post not Found'], Response::HTTP_NOT_FOUND, [], true);
+        }
+
+        $categories = $post->getCategories();
+        $jsoncategories = $serializer->serialize($categories,'json', ['groups' => 'category:read'] );
+
+        return new JsonResponse($jsoncategories, Response::HTTP_OK, [], true);
+    }
+
+    
 }

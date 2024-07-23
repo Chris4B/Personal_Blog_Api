@@ -26,9 +26,9 @@ class CommentController extends AbstractController
     public function getCommentById(Comment $comment, SerializerInterface $serializer): JsonResponse
     {
         if($comment){
-            $jsonComments = $serializer->serialize($comment,'json', ['Groups'=>['comment:read']]);
+            $jsonComments = $serializer->serialize($comment,'json', ['groups'=>['comment:read']]);
 
-            return new JsonResponse($jsonComments);
+            return new JsonResponse($jsonComments, Response::HTTP_OK,[], true);
         }
 
         return new JsonResponse(['error' => 'No Comment Found'], Response::HTTP_NOT_FOUND);
