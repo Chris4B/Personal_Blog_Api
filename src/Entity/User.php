@@ -56,14 +56,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Post>
      */
     #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'userid', cascade: ['persist', 'remove'], orphanRemoval: true)]
-
+    #[Groups(['user:read', 'user:write'])]
     private Collection $posts;
 
     /**
      * @var Collection<int, Comment>
      */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'userid', cascade: ['persist', 'remove'], orphanRemoval: true)]
-
+    #[Groups(['user:read', 'user:write'])]
     private Collection $comments;
 
     public function __construct()
