@@ -22,9 +22,8 @@ class PostController extends AbstractController
     }
 
     #[Route('api/posts/{id}', name: 'detailPost', methods: ['GET'])]
-    public function getPostById(Post $post, SerializerInterface $serializer, PostRepository $postRepository): JsonResponse
+    public function getPostById(Post $post, SerializerInterface $serializer): JsonResponse
     {
-        // $post = $postRepository->find($id);
 
         if ($post) {
             $json = $serializer->serialize($post, 'json', ['groups' => 'post:read']);

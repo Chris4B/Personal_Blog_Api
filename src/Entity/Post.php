@@ -41,7 +41,7 @@ class Post
     /**
      * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'posts', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'posts', orphanRemoval: true, cascade: ['persist', 'remove'])]
     #[Groups(["post:read"])]
     private Collection $comments;
 

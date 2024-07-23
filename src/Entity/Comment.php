@@ -30,7 +30,7 @@ class Comment
     private ?\DateTimeInterface $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete:'CASCADE')]
     private ?Post $posts = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
