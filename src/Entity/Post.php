@@ -16,11 +16,11 @@ class Post
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["post:read", "post:write", "user:read"])]
+    #[Groups(["post:read", "post:write", "user:read", "post:partial"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["post:read", "post:write"])]
+    #[Groups(["post:read", "post:write", "post:partial"])]
     private ?string $title = null;
 
     #[ORM\Column]
@@ -50,7 +50,7 @@ class Post
     private ?User $userid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["post:read", "post:write"])]
+    #[Groups(["post:read", "post:write", "post:partial"])]
     private ?string $content = null;
 
     public function __construct()

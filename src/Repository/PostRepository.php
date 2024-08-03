@@ -16,6 +16,21 @@ class PostRepository extends ServiceEntityRepository
         parent::__construct($registry, Post::class);
     }
 
+
+    // Selection partielle de l'entité post
+
+    public function findPartial($fields): ?Post
+    {
+        $pp = $this->createQueryBuilder("p");
+
+        foreach ($fields as $field) {
+            $pp->addSelect("p.". $field ."");
+  
+        }
+        
+        return $pp->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Post[] Returns an array of Post objects
 //     */
