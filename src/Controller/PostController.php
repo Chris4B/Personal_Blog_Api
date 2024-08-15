@@ -27,7 +27,7 @@ class PostController extends AbstractController
      * 
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface -> si une erreur de sérialisation se produit.
      */
-    #[Route('api/posts', name: 'post', methods: ['GET'])]
+    #[Route('/api/posts/', name: 'post', methods: ['GET'])]
     public function index(PostRepository $postRepository, SerializerInterface $serializer): JsonResponse
     {
         $postList = $postRepository->findAll();
@@ -40,10 +40,10 @@ class PostController extends AbstractController
     }
 
     /**
-     * Récupère et renvoie une sélection partielle de posts au format JSON
+     * Récupère et renvoie une sélection partielle de l'entité Posts  au format JSON
      * 
-     * Cette méthode permet de récupérer uniquement certains champs de posts,
-     * spécifiés via le paramètre de la requete "fields". 
+     * Cette méthode permet de récupérer uniquement certains champs de posts.
+     *  
      * 
      * @param PostRepository $postRepository Le repository des posts pour accéder aux données des posts.
      * @param SerializerInterface $serializer Le service de sérialisation pour convertir les objets en JSON.
@@ -53,33 +53,22 @@ class PostController extends AbstractController
      *
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface Si une erreur de sérialisation se produit.
      */
-    #[Route('/api/posts/partial', name:'post_partial', methods: ['GET'])]
+    #[Route('/api/posts/partial', name: 'post_partial', methods: ['GET'])]
     public function indexPartial(PostRepository $postRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
-        $fields = $request->query->get('fields', 'id,title,author_id');
 
-        $fieldsArray = explode(',', $fields);
+        $postlist = $postRepository->findAll();
 
-        $partialPosts = $postRepository->findPartial($fieldsArray);
+        // Serialiser la liste des Posts 
+        // Le groupe utilisé n'est attribué qu'à certains champs de la classe Post 
 
-        $jsonPartialPosts = $serializer->serialize($partialPosts, 'json', ['groups' => 'post:read']);
+        $jsonList = $serializer->serialize($postlist, 'json', ['groups' => 'post:partial']);
 
-
-        return new JsonResponse($jsonPartialPosts, Response::HTTP_OK, [], true);
+        return new JsonResponse($jsonList, Response::HTTP_OK, [], true);
     }
 
-    
-    #[Route('api/posts/specified', name: 'post', methods: ['GET'])]
-    public function specifiedPost(PostRepository $postRepository, SerializerInterface $serializer): JsonResponse
-    {
-        $postList = $postRepository->findAll();
 
-        // Sérialiser la liste de posts en JSON en utilisant un groupe de sérialisation spécifique.
-        $jsonpostList = $serializer->serialize($postList, 'json', ['groups' => 'post:partial']);
-
-        // Retourner la réponse JSON avec un code de statut HTTP 200 (OK)
-        return new JsonResponse($jsonpostList, Response::HTTP_OK, [], true);
-    }
+   
 
 
 
@@ -94,33 +83,4 @@ class PostController extends AbstractController
 
         return new JsonResponse(null, Response::HTTP_NOT_FOUND, [], true);
     }
-
-    #[Route('api/posts/{id}/comments', name:'get_all_comment_by_post', methods: ['GET'])]
-    public function getAllCommentsByPost(Post $post, SerializerInterface $serializer): JsonResponse
-    {
-        if(!$post){
-            return new JsonResponse(['error' => "Post not found"], Response::HTTP_NOT_FOUND, [], true);
-        }
-
-        $comments = $post->getComments();
-
-        $jsoncomments = $serializer->serialize($comments,"json", ['groups' => 'comment:read']);
-
-        return new JsonResponse($jsoncomments, Response::HTTP_OK, [], true);
-    }
-
-    #[Route('api/posts/{id}/categories', name:'', methods: ['GET'])]
-    public function getCategoryByPost(Post $post, SerializerInterface $serializer): JsonResponse
-    {
-        if(!$post){
-            return new JsonResponse(['error'=> 'Post not Found'], Response::HTTP_NOT_FOUND, [], true);
-        }
-
-        $categories = $post->getCategories();
-        $jsoncategories = $serializer->serialize($categories,'json', ['groups' => 'category:read'] );
-
-        return new JsonResponse($jsoncategories, Response::HTTP_OK, [], true);
-    }
-
-    
 }
