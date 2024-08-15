@@ -18,18 +18,15 @@ class PostRepository extends ServiceEntityRepository
 
 
     // Selection partielle de l'entité post
-
-    public function findPartial($fields): ?Post
+    public function filterBytitle($title): array
     {
-        $pp = $this->createQueryBuilder("p");
-
-        foreach ($fields as $field) {
-            $pp->addSelect("p.". $field ."");
-  
-        }
-        
-        return $pp->getQuery()->getResult();
+        return $this->createQueryBuilder("p")
+                ->andWhere("p.title = :title")
+                ->setParameter("title", $title)
+                ->getQuery()
+                ->getResult();
     }
+   
 
 //    /**
 //     * @return Post[] Returns an array of Post objects

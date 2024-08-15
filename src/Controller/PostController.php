@@ -67,6 +67,49 @@ class PostController extends AbstractController
         return new JsonResponse($jsonList, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * renvoit une selection Totale de l'entité post un paramètre de recherche
+     * porté sur le titre
+     * 
+     * Cette action fait un filtre sur une colonne non nullable "titre" au travers d'un parapètre de requete.
+     * Le paramètre dans cette fonction est obligatoire
+     * 
+     * 
+     * @param PostRepository $postRepository Le repository des posts pour accéder aux données des posts.
+     * @param SerializerInterface $serializer Le service de sérialisation pour convertir les objets en JSON.
+     * @param Request $request L'objet de requête HTTP, utilisé pour obtenir les champs spécifiés.
+     *
+     * @return JsonResponse La réponse JSON contenant la sélection partielle des posts.
+     *
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface Si une erreur de sérialisation se produit.
+     */
+
+    #[Route('api/posts/querytitle', name:'', methods: ['GET'])]
+    public function postWithQuery(PostRepository $postRepository, SerializerInterface $serializer, Request $request): JsonResponse
+{
+    // Récupération du paramètre 'title' depuis la requête GET
+    $title = $request->query->filter('title');
+
+    // Vérification si le paramètre 'title' est fourni et non vide
+    if (empty($title)) {
+        return new JsonResponse(['error' => 'The title parameter is required and cannot be empty.'], Response::HTTP_BAD_REQUEST);
+    }
+
+    // Filtrer les posts par titre
+    $postList = $postRepository->filterBytitle($title);
+
+    // Vérification si la liste est vide
+    if (empty($postList)) {
+        return new JsonResponse(['error' => 'No posts found with the given title.'], Response::HTTP_NOT_FOUND);
+    }
+
+    // Sérialiser la liste de posts en JSON en utilisant un groupe de sérialisation spécifique
+    $jsonPostList = $serializer->serialize($postList, 'json', ['Groups' => 'Post:read']);
+
+    // Retourner la réponse JSON avec un code de statut HTTP 200 (OK)
+    return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
+}
+
 
    
 
