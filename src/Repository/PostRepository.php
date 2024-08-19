@@ -26,6 +26,27 @@ class PostRepository extends ServiceEntityRepository
                 ->getQuery()
                 ->getResult();
     }
+
+    public function filterbyParams(?string $title, ?string $category): array
+    {
+        $qb = $this->createQueryBuilder("q");
+    
+        if ($title) {
+            $qb->andWhere("q.title = :title")
+               ->setParameter("title", $title);
+        }
+    
+        if ($category) {
+            // Ajout d'une jointure pour filtrer par catégorie
+            $qb->innerJoin('q.categories', 'c')
+               ->andWhere("c.name = :category")
+               ->setParameter("category", $category);
+        }
+    
+        // Retourner tous les résultats correspondant aux critères
+        return $qb->getQuery()->getResult();
+    }
+    
    
 
 //    /**

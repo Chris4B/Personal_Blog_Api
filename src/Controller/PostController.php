@@ -110,7 +110,7 @@ class PostController extends AbstractController
         return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
     }
 
-
+    #[Route('api/posts/optionalquery', name: 'querytitle', methods: ['GET'])]
     public function postWithOptionalQuery(PostRepository $postRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
         $title = $request->query->filter('title');
@@ -124,12 +124,39 @@ class PostController extends AbstractController
         }
 
         // Sérialiser la liste de posts en JSON en utilisant un groupe de sérialisation spécifique
-        $jsonPostList = $serializer->serialize($postList, 'json', ['Groups' => 'Post:read']);
+        $jsonPostList = $serializer->serialize($postList, 'json', ['groups' => 'post:read']);
 
         // Retourner la réponse Json avec un code de statu HTTP 200 (OK)
         return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
     }
 
+    #[Route('api/posts/twoqueries', name: 'querytitle', methods: ['GET'])]
+    public function postWithTwoOptionalQueries(PostRepository $postRepository, SerializerInterface $serializer, Request $request): JsonResponse
+    {
+        $title = $request->query->get('title');
+        $author = $request->query->get('category');
+    
+        // Si les deux paramètres sont vides, renvoyer une erreur
+        if (empty($title) && empty($author)) {
+            return new JsonResponse(['error' => 'At least one query parameter (title or category) is required.'], Response::HTTP_BAD_REQUEST);
+        }
+    
+        // Filtrer les posts en fonction des paramètres fournis
+        $postList = $postRepository->filterbyParams($title, $author);
+    
+        // Si aucun post n'est trouvé, renvoyer une erreur
+        if (empty($postList)) {
+            return new JsonResponse(['error' => 'No posts found with the given parameters.'], Response::HTTP_NOT_FOUND);
+        }
+    
+        // Sérialiser la liste des posts
+        $jsonPostList = $serializer->serialize($postList, 'json', ['groups' => 'post:read']);
+    
+        // Retourner la réponse JSON avec un code de statut HTTP 200 (OK)
+        return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
+    }
+    
+    
 
 
 
