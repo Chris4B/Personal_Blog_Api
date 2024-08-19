@@ -1,5 +1,6 @@
 ARG PHP_VERSION=8.2
 ARG NGINX_VERSION="latest"
+ARG PHP_MEMORY_LIMIT=512M
 
 FROM php:${PHP_VERSION}-fpm as app_php
 
@@ -20,7 +21,10 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Copier le fichier php.ini
-COPY php.ini /usr/local/etc/php/
+# RUN echo "memory_limit = ${PHP_MEMORY_LIMIT}" > /usr/local/etc/php/conf.d/memory-limit.ini
+
+# ENV PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT}
+COPY docker/php/php.ini /usr/local/etc/php/
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html

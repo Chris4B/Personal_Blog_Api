@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\MaxDepth;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -16,31 +17,34 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["category:read","category:write","post:read"])]
+    #[Groups([ "post:partial"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["category:read","category:write"])]
+   
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["category:read","category:write"])]
+    
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(["category:read","category:write"])]
+   
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(["category:read","category:write"])]
+    
     private ?\DateTimeInterface $updated_at = null;
 
     /**
      * @var Collection<int, Post>
      */
     #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'categories')]
-    // #[ORM\JoinTable(name:'category_post')]
+    
     private Collection $posts;
+
+
+
 
     public function __construct()
     {

@@ -14,11 +14,11 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["comment:read", "comment:write", "post:read", "user:read"])]
+    #[Groups(["comment:read", "comment:write", "post:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["comment:read", "comment:write"])]
+    #[Groups(["comment:read", "comment:write","post:read"])]
     private ?string $content = null;
 
     #[ORM\Column]
@@ -29,12 +29,12 @@ class Comment
     #[Groups(["comment:read", "comment:write"])]
     private ?\DateTimeInterface $updated_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Post $posts = null;
+    // #[ORM\ManyToOne(inversedBy: 'comments')]
+    // #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    // private ?Post $posts = null;
 
-    #[ORM\ManyToOne(inversedBy: 'comments')]
-    private ?User $userid = null;
+    // #[ORM\ManyToOne(inversedBy: 'comments')]
+    // private ?User $userid = null;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -89,26 +89,26 @@ class Comment
         return $this;
     }
 
-    public function getPosts(): ?Post
-    {
-        return $this->posts;
-    }
+    // public function getPosts(): ?Post
+    // {
+    //     // return $this->posts;
+    // }
 
     public function setPosts(?Post $posts): static
     {
-        $this->posts = $posts;
+        // $this->posts = $posts;
 
         return $this;
     }
 
-    public function getUserid(): ?User
-    {
-        return $this->userid;
-    }
+    // public function getUserid(): ?User
+    // {
+    //     // return $this->userid;
+    // }
 
     public function setUserid(?User $userid): static
     {
-        $this->userid = $userid;
+        // $this->userid = $userid;
 
         return $this;
     }

@@ -26,15 +26,14 @@ use Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator;
  * @method static Post[]|Proxy[] randomRange(int $min, int $max, array $attributes = [])
  * @method Post|Proxy create(array|callable $attributes = [])
  */
-final class PostFactory extends PersistentProxyObjectFactory{
+final class PostFactory extends PersistentProxyObjectFactory
+{
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
      * @todo inject services if required
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public static function class(): string
     {
@@ -53,9 +52,9 @@ final class PostFactory extends PersistentProxyObjectFactory{
             'title' => self::faker()->word(),
             "content" => self::faker()->paragraph(),
             'updated_at' => null,
-            "userid" => UserFactory::random(),
-            "categories" => CategoryFactory::new(),
-            "comments" => CommentFactory::new(),
+            // "user" => UserFactory::random(),
+            "categories" => CategoryFactory::new()->many(3),
+            // "comments" => CommentFactory::new()->many(3),
         ];
     }
 

@@ -27,16 +27,16 @@ class PostController extends AbstractController
      * 
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface -> si une erreur de sérialisation se produit.
      */
-    #[Route('/api/posts/', name: 'post', methods: ['GET'])]
+    #[Route('/api/posts/', name: 'get_posts', methods: ['GET'])]
     public function index(PostRepository $postRepository, SerializerInterface $serializer): JsonResponse
     {
         $postList = $postRepository->findAll();
 
         // Sérialiser la liste de posts en JSON en utilisant un groupe de sérialisation spécifique.
-        $jsonpostList = $serializer->serialize($postList, 'json', ['groups' => 'post:read']);
+        $jsonPostList = $serializer->serialize($postList, 'json', ['groups' => 'post:read']);
 
         // Retourner la réponse JSON avec un code de statut HTTP 200 (OK)
-        return new JsonResponse($jsonpostList, Response::HTTP_OK, [], true);
+        return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
     }
 
     /**
@@ -84,34 +84,53 @@ class PostController extends AbstractController
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface Si une erreur de sérialisation se produit.
      */
 
-    #[Route('api/posts/querytitle', name:'', methods: ['GET'])]
+    #[Route('api/posts/querytitle', name: 'querytitle', methods: ['GET'])]
     public function postWithQuery(PostRepository $postRepository, SerializerInterface $serializer, Request $request): JsonResponse
-{
-    // Récupération du paramètre 'title' depuis la requête GET
-    $title = $request->query->filter('title');
+    {
+        // Récupération du paramètre 'title' depuis la requête GET
+        $title = $request->query->filter('title');
 
-    // Vérification si le paramètre 'title' est fourni et non vide
-    if (empty($title)) {
-        return new JsonResponse(['error' => 'The title parameter is required and cannot be empty.'], Response::HTTP_BAD_REQUEST);
+        // Vérification si le paramètre 'title' est fourni et non vide
+        if (empty($title)) {
+            return new JsonResponse(['error' => 'The title parameter is required and cannot be empty.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Filtrer les posts par titre
+        $postList = $postRepository->filterBytitle($title);
+
+        // Vérification si la liste est vide
+        if (empty($postList)) {
+            return new JsonResponse(['error' => 'No posts found with the given title.'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Sérialiser la liste de posts en JSON en utilisant un groupe de sérialisation spécifique
+        $jsonPostList = $serializer->serialize($postList, 'json', ['groups' => 'post:partial']);
+
+        // Retourner la réponse JSON avec un code de statut HTTP 200 (OK)
+        return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
     }
 
-    // Filtrer les posts par titre
-    $postList = $postRepository->filterBytitle($title);
 
-    // Vérification si la liste est vide
-    if (empty($postList)) {
-        return new JsonResponse(['error' => 'No posts found with the given title.'], Response::HTTP_NOT_FOUND);
+    public function postWithOptionalQuery(PostRepository $postRepository, SerializerInterface $serializer, Request $request): JsonResponse
+    {
+        $title = $request->query->filter('title');
+        if (!empty($title)) {
+            $postList = $postRepository->filterByTitle($title);
+            if (empty($postList)) {
+                return new JsonResponse(['error' => 'No posts found with the given title'], Response::HTTP_NOT_FOUND);
+            }
+        } else {
+            $postList = $postRepository->findAll();
+        }
+
+        // Sérialiser la liste de posts en JSON en utilisant un groupe de sérialisation spécifique
+        $jsonPostList = $serializer->serialize($postList, 'json', ['Groups' => 'Post:read']);
+
+        // Retourner la réponse Json avec un code de statu HTTP 200 (OK)
+        return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
     }
 
-    // Sérialiser la liste de posts en JSON en utilisant un groupe de sérialisation spécifique
-    $jsonPostList = $serializer->serialize($postList, 'json', ['Groups' => 'Post:read']);
 
-    // Retourner la réponse JSON avec un code de statut HTTP 200 (OK)
-    return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
-}
-
-
-   
 
 
 

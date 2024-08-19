@@ -58,7 +58,7 @@ fixtures-create:
 
 # load fixtures
 fixtures-load:
-	docker-compose exec php php bin/console doctrine:fixtures:load
+	docker-compose exec php php bin/console doctrine:fixtures:load 
 
 # Make entity
 entity:

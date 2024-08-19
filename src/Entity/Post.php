@@ -16,7 +16,7 @@ class Post
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["post:read", "post:write", "user:read", "post:partial"])]
+    #[Groups(["post:read", "post:write", "post:partial"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -31,32 +31,34 @@ class Post
     #[Groups(["post:read", "post:write"])]
     private ?\DateTimeInterface $updated_at = null;
 
-    /**
-     * @var Collection<int, Category>
-     */
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'posts')]
-    #[Groups(["post:read"])]
-    private Collection $categories;
 
-    /**
-     * @var Collection<int, Comment>
-     */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'posts', orphanRemoval: true, cascade: ['persist', 'remove'])]
-    #[Groups(["post:read"])]
-    private Collection $comments;
+    // /**
+    //  * @var Collection<int, Comment>
+    //  */
+    // #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'posts', orphanRemoval: true, cascade: ['persist', 'remove'])]
+    // #[Groups(["post:read"])]
+    // private Collection $comments;
 
-    #[ORM\ManyToOne(inversedBy: 'posts')]
-    #[Groups(["post:read"])]
-    private ?User $userid = null;
+    // #[ORM\ManyToOne(inversedBy: 'posts')]
+    // #[Groups(["post:read"])]
+    // private ?User $user = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["post:read", "post:write", "post:partial"])]
     private ?string $content = null;
 
+    /**
+     * @var Collection<int, Category>
+     */
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'posts')]
+    #[Groups(["post:partial"])]
+    private Collection $categories;
+
     public function __construct()
     {
+
+        // $this->comments = new ArrayCollection();
         $this->categories = new ArrayCollection();
-        $this->comments = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -112,71 +114,48 @@ class Post
         return $this;
     }
 
-    /**
-     * @return Collection<int, category>
-     */
-    public function getCategories(): Collection
-    {
-        return $this->categories;
-    }
-
-    public function addCategory(category $category): static
-    {
-        if (!$this->categories->contains($category)) {
-            $this->categories->add($category);
-        }
-
-        return $this;
-    }
-
-    public function removeCategory(category $category): static
-    {
-        $this->categories->removeElement($category);
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, comment>
      */
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
+    // public function getComments(): Collection
+    // {
+    //     return $this->comments;
+    // }
 
-    public function addComment(comment $comment): static
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setPosts($this);
-        }
+    // public function addComment(comment $comment): static
+    // {
+    //     if (!$this->comments->contains($comment)) {
+    //         $this->comments->add($comment);
+    //         $comment->setPosts($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeComment(comment $comment): static
-    {
-        if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
-            if ($comment->getPosts() === $this) {
-                $comment->setPosts(null);
-            }
-        }
+    // public function removeComment(comment $comment): static
+    // {
+    //     if ($this->comments->removeElement($comment)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($comment->getPosts() === $this) {
+    //             $comment->setPosts(null);
+    //         }
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getUserid(): ?User
-    {
-        return $this->userid;
-    }
+    // public function getUser(): ?User
+    // {
+    //     return $this->user;
+    // }
 
-    public function setUserid(?User $userid): static
-    {
-        $this->userid = $userid;
+    // public function setUser(?User $userid): static
+    // {
+    //     $this->user = $userid;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getContent(): ?string
     {
@@ -186,6 +165,30 @@ class Post
     public function setContent(string $content): static
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        $this->categories->removeElement($category);
 
         return $this;
     }
