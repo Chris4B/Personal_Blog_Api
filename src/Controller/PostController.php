@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Repository\PostRepository;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -155,8 +156,30 @@ class PostController extends AbstractController
         // Retourner la réponse JSON avec un code de statut HTTP 200 (OK)
         return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
     }
+
+    #[Route('api/posts/datetime', name: 'querydate', methods: ['GET'])]
+    public function getPostByDate(PostRepository $postRepository, SerializerInterface $serializer, Request $request): JsonResponse
+    {
+        $dateString= $request->query->filter('date');
+
+        $date = DateTime::createFromFormat('Y-m-d', $dateString);
+
+        if (!$date) {
+            return new JsonResponse(['error' => 'Invalid date format.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $postList = $postRepository->filterByDate($date);
+
+        if (empty($postList)) {
+            return new JsonResponse(['error' => 'No posts found with the given parameters.'], Response::HTTP_NOT_FOUND);
+        }
+
+         // Sérialiser la liste des posts
+         $jsonPostList = $serializer->serialize($postList, 'json', ['groups' => 'post:read']);
     
-    
+         // Retourner la réponse JSON avec un code de statut HTTP 200 (OK)
+         return new JsonResponse($jsonPostList, Response::HTTP_OK, [], true);
+    }
 
 
 
